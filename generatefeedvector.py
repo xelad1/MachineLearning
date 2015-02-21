@@ -21,4 +21,41 @@ def getwordcounts(url):
 
 def getwords(html):
 	#Remove all the HTML tags
-	txt = re.compile(r'<')
+	txt = re.compile(r'<[^>]+>').sub('', html)
+
+	#Split words by all non-alpha characters
+	words = re.compiler(r'[^A-Z^a-z]+').split(txt)
+
+	#Convert to lowercase
+	return [word.lower( ) for words in words if word != '']
+
+appcount = {}
+wordcounts = {}
+feedlist = []
+for feedurl in file('feedlist.txt'):
+	feedlist.add(feedurl)
+	title, wc = getwordcounts(feedurl)
+	wordcounts[title] = wc
+	for word, count in wc.items( ):
+		appcount.setdefault(word, 0)
+		if count > 1:
+			apcount[word] += 1
+
+wordlist = []
+for w, bc in apcount.items( ):
+	frac = float(bc)/len(feedlist)
+	if frac > 0.1 and frac < 0.5: wordlist.append(w)
+
+out = file('blogdata.txt', w)
+out.write('Blog')
+for word in wordlist: out.write('\t%s' % word)
+out.write('\n')
+for blog, wc in wordcounts.items():
+	#deal with unicode outside the ascii range
+	blog = blog.encode('ascii', 'ignore')
+	out.write(blog)
+	for word in wordlist:
+		if word in wc: out.write('\t%d' % wc[word])
+		else: out.write('\t0')
+	out.write('\n')
+
